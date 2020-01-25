@@ -1,0 +1,1 @@
+{spark-bin}\spark-submit --class SparkClearData --master local {java.jar} {directoryWithCSV} {output.txt}

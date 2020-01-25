@@ -1,0 +1,1 @@
+{spark-bin}\spark-submit --class SparkReduceData --master local {java.jar} {outputfromTask1.txt} {output2.txt}
