@@ -41,14 +41,6 @@ public class SparkReduceData {
                     Row maxTAVG = reduced.reduce(getMAX());
                     Row minTAVG = reduced.reduce(getMIN());
 
-                    System.out.println(path);
-                    System.out.println(maxTAVG.size());
-                    System.out.println("DATE: "+ maxTAVG.getInt(1));
-                    System.out.println("MAX: " + maxTAVG.getDouble(6));
-                    System.out.println("DATE: "+minTAVG.getInt(1));
-                    System.out.println("TMIN: " + minTAVG.getDouble(6));
-
-
                     outputData.write(ToString(maxTAVG, minTAVG));
                 }catch (Exception e){
                     e.printStackTrace();
