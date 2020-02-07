@@ -1,13 +1,10 @@
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SparkSession;
-
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RecordsPrinter {
 
@@ -21,21 +18,43 @@ public class RecordsPrinter {
         Integer dataSize = 0;
         Integer higherTemperatue = 0;
 
-        for (CSVRecord record : records){
-            Double maxAverageTemperatureYear = parseInt(record.get(CsvLabel.TAMAXDATE));
-            Double minAverageTemperatureYear = parseInt(record.get(CsvLabel.TAMINDATE));
+        List<Double> temperatureDifference = new ArrayList<>();
 
-            if(maxAverageTemperatureYear > minAverageTemperatureYear)
+        for (CSVRecord record : records){
+            Double maxAverageTemperatureYear = parseDouble(record.get(CsvLabel.TAMAXDATE));
+            Double minAverageTemperatureYear = parseDouble(record.get(CsvLabel.TAMINDATE));
+            Double minAverageTemperature = parseDouble(record.get(CsvLabel.TAMIN));
+            Double maxAverageTemperature = parseDouble(record.get(CsvLabel.TAMAX));
+
+            if(maxAverageTemperatureYear > minAverageTemperatureYear){
                 higherTemperatue++;
+
+                temperatureDifference.add( minAverageTemperature - maxAverageTemperature );
+            }
+            temperatureDifference.add( maxAverageTemperature - minAverageTemperature );
+
+
             dataSize++;
         }
 
+
+        System.out.println("Avg difference: " + calculateAvg(temperatureDifference));
         System.out.println("Total: "+ dataSize);
         System.out.println("Has grown: "+ higherTemperatue);
-        System.out.println("Temperature higher in "+ higherTemperatue * 100 /dataSize + " percent of cases");
+        System.out.println("Temperature higher in "+ calculatePercentage(dataSize, higherTemperatue) + " percent of cases");
     }
 
-    private static Double parseInt(String s){
+    private static Double calculateAvg(List<Double> list){
+        return list.stream()
+                .mapToDouble(a -> a)
+                .average().getAsDouble();
+    }
+
+    private static int calculatePercentage(Integer totalSize, Integer value) {
+        return value * 100 /totalSize;
+    }
+
+    private static Double parseDouble(String s){
         return Double.valueOf(s);
     }
 
